@@ -25,7 +25,7 @@ root = Tk()
 root.geometry('1000x700')
 center_window(root)
 root.configure(bg='#DCEAF2')
-root.title('Теплоперенос в пористой среде')
+root.title('Heat Transfer Solver v.1.0.0')
 
 style = ttk.Style()
 style.theme_use('clam') #'alt', 'clam', 'default', 'classic'
