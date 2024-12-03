@@ -111,18 +111,18 @@ def btn_click():
 
     fig, ax = plt.subplots(figsize=(6, 4))
     fig.patch.set_facecolor('#DCEAF2')
-    fig.tight_layout(pad=0)
+    fig.tight_layout(pad=2)
 
     line_f, = ax.plot(x, T_f[N_t-1, :], linestyle='--', label=f"Жидкость")
     line_s, = ax.plot(x, T_s[N_t-1, :], linestyle='-', label=f"Твердое тело")
 
-    ax.set_xlabel("Координата x")
-    ax.set_ylabel("Температура")
+    ax.set_xlabel(r"$x, м$", fontsize=14)
+    ax.set_ylabel(r"$T, ^{\circ}C$", fontsize=14)
     ax.set_ylim(min(T_f.min(), T_s.min()), max(T_f.max(), T_s.max()))
     ax.set_xlim(0, L)
 
     ax.legend()
-    time_text = ax.text(0.75, 0.95, '', transform=ax.transAxes)
+    time_text = ax.text(0.72, 1.04, '', transform=ax.transAxes,fontsize=12)
 
     for widget in canvas2.winfo_children():
         widget.destroy()
@@ -145,7 +145,7 @@ def update_graph(val):
     t = int(float(val))
     line_f.set_ydata(T_f[t, :])
     line_s.set_ydata(T_s[t, :])
-    time_text.set_text(f'Время = {(t+1) * dt:.2f} с')
+    time_text.set_text(f'Время = {(t) * dt:.2f} с')
     fig.canvas.draw_idle()
 
     label.config(text=f"Шаг по времени: {t}")
