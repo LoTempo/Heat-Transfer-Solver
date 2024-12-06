@@ -66,55 +66,54 @@ def btn_click():
     T_ext1 = float(entries["T_ext1_input"].get())
     T_ext2 = float(entries["T_ext2_input"].get())
     T_init_f = float(entries["T_init_f_input"].get())
-    K_ff = float(entries["K_ff_input"].get())
-    K_ss = float(entries["K_ss_input"].get())
-    K_karks = float(entries["K_karks_input"].get())
+    k_ef = float(entries["K_ff_input"].get())
+    k_es = float(entries["K_ss_input"].get())
+    k_s = float(entries["K_karks_input"].get())
     h_sf = float(entries["h_sf_input"].get())
     h_ext1 = float(entries["h_ext1_input"].get())
     h_ext2 = float(entries["h_ext2_input"].get())
-    rho_f = float(entries["rho_f_input"].get())
-    rho_s = float(entries["rho_s_input"].get())
+    p_f = float(entries["rho_f_input"].get())
+    p_s = float(entries["rho_s_input"].get())
     co_f = float(entries["co_f_input"].get())
     co_s = float(entries["co_s_input"].get())
-    epsilon = float(entries["epsilon_input"].get())
+    phi = float(entries["epsilon_input"].get())
     u = float(entries["u_input"].get())
-    N_x = int(entries["N_x_input"].get())
-    N_t = int(entries["N_t_input"].get())
+    N = int(entries["N_x_input"].get())
+    M = int(entries["N_t_input"].get())
     dt = float(entries["dt_input"].get())
     T_in = T_ext1
     T_init_s = T_init_f
-    dx = L / N_x
+    dx = L / N
 
-    T_f = np.ones((N_t, N_x)) * T_init_f
-    T_s = np.ones((N_t, N_x)) * T_init_s
+    T_f = np.ones((M, N)) * T_init_f
+    T_s = np.ones((M, N)) * T_init_s
 
     T_f[:, 0] = T_in
 
-    for i in range(1, N_t):
-        for j in range(1, N_x - 1):
-            T_s[i, j] = (1 / ((1 - epsilon) *rho_s*co_s )) * (
-                    ((T_s[i - 1, j - 1] - 2 * T_s[i - 1, j] + T_s[i - 1, j + 1]) / dx ** 2) * K_ss + h_sf * (
-                        T_f[i - 1, j] - T_s[i - 1, j])) * dt + T_s[i - 1, j]
+    for i in range(1, M):
+        for j in range(1, N - 1):
+            T_s[i, j] = ((1 / ((1 - phi) * p_s * co_s)) *
+                        (((T_s[i - 1, j - 1] - 2 * T_s[i - 1, j] + T_s[i - 1, j + 1]) / dx ** 2) * k_es +
+                        h_sf * (T_f[i - 1, j] - T_s[i - 1, j])) * dt + T_s[i - 1, j])
 
-            T_f[i, j] = (((K_ff * ((T_f[i - 1, j - 1] - 2 * T_f[i - 1, j] + T_f[i - 1, j + 1]) / dx ** 2) + h_sf * (
-                        T_s[i - 1, j] - T_f[i - 1, j])) / (
-                                  epsilon * rho_f*co_f)) - u * (T_f[i - 1, j] - T_f[i - 1, j - 1]) / dx) * dt + T_f[
-                            i - 1, j]
+            T_f[i, j] = (((k_ef * ((T_f[i - 1, j - 1] - 2 * T_f[i - 1, j] + T_f[i - 1, j + 1]) / dx ** 2) +
+                        h_sf * (T_s[i - 1, j] - T_f[i - 1, j])) / (phi * p_f * co_f)) - u * (T_f[i - 1, j] -
+                        T_f[i - 1, j - 1]) / dx) * dt + T_f[i - 1, j]
 
-        T_s[i, 0] = (h_ext1 * dx * T_ext1 + K_karks * T_s[i, 1]) / (K_karks + h_ext1 * dx)
+        T_s[i, 0] = (h_ext1 * dx * T_ext1 + k_s * T_s[i, 1]) / (k_s + h_ext1 * dx)
 
-        T_s[i, -1] = (K_karks * T_s[i, -2] + h_ext2 * dx * T_ext2) / (K_karks + h_ext2 * dx)
+        T_s[i, -1] = (k_s * T_s[i, -2] + h_ext2 * dx * T_ext2) / (k_s + h_ext2 * dx)
 
         T_f[i, -1] = T_f[i, -2]
 
-    x = np.linspace(0, L, N_x)
+    x = np.linspace(0, L, N)
 
     fig, ax = plt.subplots(figsize=(6, 4))
     fig.patch.set_facecolor('#DCEAF2')
     fig.tight_layout(pad=2)
 
-    line_f, = ax.plot(x, T_f[N_t-1, :], linestyle='--', label=f"Жидкость")
-    line_s, = ax.plot(x, T_s[N_t-1, :], linestyle='-', label=f"Твердое тело")
+    line_f, = ax.plot(x, T_f[M-1, :], linestyle='--', label=f"Жидкость")
+    line_s, = ax.plot(x, T_s[M-1, :], linestyle='-', label=f"Твердое тело")
 
     ax.set_xlabel(r"$x, м$", fontsize=14)
     ax.set_ylabel(r"$T, ^{\circ}C$", fontsize=14)
